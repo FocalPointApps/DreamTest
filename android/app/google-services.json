@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "310149154948",
+    "project_id": "dreamtest-ead5a",
+    "storage_bucket": "dreamtest-ead5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310149154948:android:1bdde21c8b5963000bdad1",
+        "android_client_info": {
+          "package_name": "com.app.dreamTest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310149154948-jpuv9ptbeas4n654hbqikrm11var9j5v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDFIeOiG1aNmDU4_YmgzQILuyalp44EoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310149154948-jpuv9ptbeas4n654hbqikrm11var9j5v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

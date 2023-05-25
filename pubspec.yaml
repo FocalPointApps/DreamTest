@@ -1,0 +1,168 @@
+name: grocery_store
+description: A new Flutter project.
+version: 2.2.48+79
+
+environment:
+  sdk: '>=2.18.5 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations: # Add this line
+    sdk: flutter
+  #------------
+  intl: ^0.18.0
+  firebase_auth: ^4.2.10
+  firebase_core: ^2.8.0
+  lottie: ^2.3.0
+#  flutter_foreground_plugin: ^0.8.0
+#  flutter_background: ^1.2.0
+  cloud_firestore: ^4.4.4
+  flutter_webrtc: ^0.9.24
+  firebase_database: ^10.0.16
+  get_it: ^7.2.0
+
+  firebase_storage: ^11.0.15
+  firebase_analytics: ^10.1.5
+  firebase_messaging: ^14.4.0
+  flutter_bloc: ^8.1.1
+  #flutter_local_notifications: ^10.0.0-dev.10
+  flutter_local_notifications: ^13.0.0
+  flutter_share: ^2.0.0
+  share_plus:
+  flutter_svg: ^1.1.6
+  font_awesome_flutter: ^10.2.1
+  google_fonts: ^4.0.4
+  http: ^0.13.5
+  image_cropper: ^3.0.1
+  image_picker: ^0.8.6
+  path_provider: ^2.0.11
+  shared_preferences: ^2.0.15
+  smooth_star_rating_null_safety: ^1.0.4+2
+  uuid: ^3.0.7
+  flutter_credit_card: ^3.0.4
+  intl_phone_field:
+  intl_phone_number_input:
+    git:
+      url: https://github.com/loaidev64/intl_phone_number_input.git
+      ref: develop
+  cached_network_image: ^3.2.3
+  webview_flutter: ^3.0.4
+  day_picker: ^2.1.1
+  flutter_callkeep: ^0.3.1+1
+  flutter_background: ^1.2.0
+
+  flutter_foreground_plugin:
+    git:
+      url: https://github.com/jja08111/flutter_foreground_service_plugin.git
+      ref: 8a09c7b0aeb9d31204147fe6ee126c8a52471e3a
+  image: ^4.0.15
+  pointer_interceptor: ^0.9.3+4
+  permission_handler: ^10.2.0
+  flutter_image_slideshow: ^0.1.4
+  stop_watch_timer: ^2.0.0
+  readmore: ^2.2.0
+  multi_select_flutter: ^4.1.2
+  url_launcher: ^6.1.7
+  cloud_functions: ^4.0.7
+  package_info_plus:
+  sms_autofill: ^2.2.0
+  country_picker: ^2.0.17
+  pdf: ^3.8.4
+  shimmer: ^2.0.0
+  linkwell: ^2.0.6
+  flutter_smartlook: ^4.0.5
+  firebase_crashlytics: ^3.0.11
+  #auto_direction: ^0.0.5
+  wakelock: ^0.6.2
+  group_radio_button: ^1.2.0
+  youtube_player_flutter: ^8.1.1
+  hijri_picker: ^3.0.0
+  modal_bottom_sheet: ^2.1.2
+  fluttertoast: ^8.1.3
+  sizer: ^2.0.15
+  appsflyer_sdk: ^6.9.3
+  record_mp3: ^3.0.0
+  timelines: ^0.1.0
+  audioplayers: ^3.0.1
+  video_player: ^2.4.8
+  flutter_slidable: ^2.0.0
+  chip_list: ^2.3.3+8
+  build_runner: ^2.3.2
+  voice_message_package: ^1.0.41
+#  open_file: ^3.2.1
+  pinput: ^2.2.23
+  dropdown_button2: ^1.9.2
+  timeago: ^3.3.0
+  firebase_dynamic_links: ^5.0.14
+  another_flushbar: ^1.10.28
+  flutter_native_image: ^0.0.6
+  agora_rtc_engine: ^5.2.0
+  rating_dialog: ^2.0.1
+  store_redirect:
+  flutter_stripe: ^9.0.0+1
+  draggable_fab: ^0.1.4
+  checkbox_grouped: ^1.9.0
+  flutter_onboarding_slider: ^1.0.9
+
+
+
+
+
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.12.0
+
+
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/fonts/
+    - assets/OpenSans-Regular.ttf
+    - assets/images/
+    - assets/applicationIcons/
+    - assets/icons/
+    - assets/call/
+    - assets/banners/
+    - lib/lang/arDream.json
+    - lib/lang/enDream.json
+    - lib/lang/frDream.json
+    - lib/lang/idDream.json
+    - assets/sound/
+    - assets/lotifile/
+
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf
+
+    - family: bukra
+      fonts:
+        - asset: assets/fonts/29LTBukraRegular3.otf
+
+
+    - family: Arial
+      fonts:
+        - asset: assets/fonts/Arial.ttf
+
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Regular.ttf
+
+    - family: Ithra
+      fonts:
+        - asset: assets/fonts/Ithra Light.ttf
+flutter_intl:                                   # Add this line
+  enabled: true                                 # Add this line
+  class_name: I10n                              # Add this line
+  main_locale: en                               # Add this line
+  arb_dir: lib/core/localization/l10n           # Add this line
+  output_dir: lib/core/localization/generated   # Add this line
+
