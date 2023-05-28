@@ -15,3 +15,7 @@ class CustomIntegrationListener implements IntegrationListener {
     print(dashboardVisitorUrl);
   }
 }
+
+class IntegrationListener {
+
+}

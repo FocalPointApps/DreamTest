@@ -1,5 +1,5 @@
-
 import 'dart:io';
+
 import 'dart:math';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,12 +7,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grocery_store/blocs/account_bloc/account_bloc.dart';
 import 'package:grocery_store/config/colorsFile.dart';
+import 'package:sugar/sugar.dart' as sugar;
 import 'package:grocery_store/localization/localization_methods.dart';
 import 'package:grocery_store/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_store/widget/processing_dialog.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../config/colorsFile.dart';
 import '../config/paths.dart';
@@ -45,8 +47,8 @@ class _AccountScreenState extends State<AccountScreen> {
   TextEditingController chatPriceController = TextEditingController();
 
   TimeOfDay selectedTime = TimeOfDay.now();
-  late String userName,price,chatPrice,bio2,workDays="",lang="",type="",from,to,theme="light",location;
-  late TextEditingController daysController ,langController,typeController,fromController,toController;
+  late String userName,price,chatPrice,bio2,workDays="",lang="",type="",from,to,fromtime,totime,theme="light",location;
+  late TextEditingController daysController ,langController,typeController,fromController,toController,fromtimeController,totimeController;
   bool monday=false,tuesday=false,wednesday=false,thursday=false,friday=false,saturday=false,sunday=false,first=true ;
   late ScrollController scrollController;
   late List<WorkTimes> workTimes;
@@ -67,6 +69,8 @@ class _AccountScreenState extends State<AccountScreen> {
     typeController= TextEditingController();
     fromController= TextEditingController();
     toController= TextEditingController();
+    fromtimeController= TextEditingController();
+    totimeController= TextEditingController();
     nameArController.text=widget.user.consultName!.nameAr!;
     nameEnController.text=widget.user.consultName!.nameEn!;
     nameFrController.text=widget.user.consultName!.nameFr!;
@@ -117,6 +121,32 @@ class _AccountScreenState extends State<AccountScreen> {
           toController.text=(toValue-12).toString()+" PM";
         else
           toController.text=toValue.toString()+" AM";
+      }
+      if(_workTime.fromtime!=null) {
+        fromtime=_workTime.fromtime!;
+        int toValue=int.parse(_workTime.fromtime!);
+
+        if(toValue==12)
+          fromtimeController.text="12 PM";
+        else if(toValue==0)
+          fromtimeController.text="12 AM";
+        else if(toValue>12)
+          fromtimeController.text=(toValue-12).toString()+" PM";
+        else
+          fromtimeController.text=toValue.toString()+" AM";
+      }
+      if(_workTime.totime!=null) {
+        totime=_workTime.totime!;
+        int toValue=int.parse(_workTime.totime!);
+
+        if(toValue==12)
+          totimeController.text="12 PM";
+        else if(toValue==0)
+          totimeController.text="12 AM";
+        else if(toValue>12)
+          totimeController.text=(toValue-12).toString()+" PM";
+        else
+          totimeController.text=toValue.toString()+" AM";
       }
     }
 
@@ -561,6 +591,18 @@ class _AccountScreenState extends State<AccountScreen> {
                         SizedBox(height: 20,),
 
                         tabbedText("time", getTranslated(context, "timeOfWork"), daysController),
+                        //////
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20,right: 20),
+                            child: Text(
+                              'الفترة الاولي',
+                              style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                color: AppColors.grey,
+                                fontSize: 20.0,
+                              ),),
+                          ),
+                        ),
 
                         Padding(
                           padding: const EdgeInsets.all(10.0),
@@ -661,6 +703,142 @@ class _AccountScreenState extends State<AccountScreen> {
 
                                         cursorColor: Colors.black,
                                         controller: toController,
+                                        keyboardType: TextInputType.name,
+                                        decoration: new InputDecoration(
+                                          hintStyle: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                            color: Colors.grey,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.5,
+                                          ),
+                                          hintText: getTranslated(context,'to'),
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],),
+                            ),
+
+                          ],),
+                        ),
+                        ////
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20,right: 20),
+                            child: Text(
+                              'الفترة الثانية',
+                              style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                color: AppColors.grey,
+                                fontSize: 20.0,
+                              ),),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children: [
+                            Container(width:size.width*.3,
+                              child: Column(children: [
+                                Text(
+                                  getTranslated(context, "from"),
+                                  style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),fontSize: 15.0,color:AppColors.grey, ),
+                                ),
+                                Container(height: 45,
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white,
+                                    borderRadius: BorderRadius.circular(35.0),
+                                    border: Border.all(color: Colors.grey,width: 1),
+                                  ),
+                                  child: Center(
+                                    child: Container(width: size.width*.2,
+                                      child: TextFormField(
+                                        onTap: () {
+                                          _selectTimeFromtime(context);
+                                        },
+                                        readOnly: true,
+                                        style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontSize: 15,
+                                        ),
+                                        validator: (String? val) {
+                                          if (val!.trim().isEmpty) {
+                                            return getTranslated(context, 'required');
+                                          }
+                                          return null;
+                                        },
+                                        /*onSaved: (val) {
+                                             from=val!;
+                                            },*/
+                                        cursorColor: Colors.black,
+                                        controller: fromtimeController,
+                                        keyboardType: TextInputType.name,
+                                        decoration: new InputDecoration(
+                                          hintStyle: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                            color: Colors.grey,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.5,
+                                          ),
+                                          hintText: getTranslated(context,'from'),
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],),
+                            ),
+                            Container(width:size.width*.3,
+                              child: Column(children: [
+                                Text(
+                                  getTranslated(context, "to"),
+                                  style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                    color: AppColors.grey,
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),),
+                                Container(height: 45,
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white,
+                                    borderRadius: BorderRadius.circular(35.0),
+                                    border: Border.all(color: Colors.grey,width: 1),
+                                  ),
+                                  child: Center(
+                                    child:   Container(width: size.width*.2,
+                                      child: TextFormField(
+                                        onTap: () {
+                                          _selectTimeTotime(context);
+                                        },
+                                        validator: (String? val) {
+                                          if (val!.trim().isEmpty) {
+                                            return getTranslated(context, 'required');
+                                          }
+                                          return null;
+                                        },
+                                        /* onSaved: (val) {
+                                              to=val!;
+                                            },*/
+                                        readOnly: true,
+                                        style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontSize: 15,
+                                        ),
+
+                                        cursorColor: Colors.black,
+                                        controller: totimeController,
                                         keyboardType: TextInputType.name,
                                         decoration: new InputDecoration(
                                           hintStyle: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
@@ -1037,8 +1215,15 @@ class _AccountScreenState extends State<AccountScreen> {
         }
       }
       var datenow=DateTime.now();
+      var now = sugar.ZonedDateTime.now(sugar.Timezone('Asia/Riyadh'));
+
+      print('hiiiiiiiiiii '+now.toString());
+
+
       _workTime.from=from;
       _workTime.to=to;
+      _workTime.fromtime=fromtime;
+      _workTime.totime=totime;
       widget.user.voice=allowVoice;
       widget.user.chat=allowChat;
       widget.user.workTimes!.clear();
@@ -1075,6 +1260,10 @@ class _AccountScreenState extends State<AccountScreen> {
     if(timeOfDay != null )
     {
       setState(() {
+
+        //final now = DateTime.now();
+        //final dt = DateTime(now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+        //print('object'+dt.toString());
         from=timeOfDay.hour.toString();
         if(timeOfDay.hour==12)
           fromController.text="12 PM";
@@ -1084,6 +1273,27 @@ class _AccountScreenState extends State<AccountScreen> {
           fromController.text=(timeOfDay.hour-12).toString()+" PM";
         else
           fromController.text=timeOfDay.hour.toString()+" AM";
+      });
+    }
+  }
+  _selectTimeFromtime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: _workTime.fromtime==null?selectedTime:TimeOfDay(hour:int.parse(widget.user.workTimes![0].fromtime! ), minute: 0),
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+    if(timeOfDay != null )
+    {
+      setState(() {
+        fromtime=timeOfDay.hour.toString();
+        if(timeOfDay.hour==12)
+          fromtimeController.text="12 PM";
+        else if(timeOfDay.hour==0)
+          fromtimeController.text="12 Am";
+        else if(timeOfDay.hour>12)
+          fromtimeController.text=(timeOfDay.hour-12).toString()+" PM";
+        else
+          fromtimeController.text=timeOfDay.hour.toString()+" AM";
       });
     }
   }
@@ -1105,6 +1315,27 @@ class _AccountScreenState extends State<AccountScreen> {
           toController.text=(timeOfDay.hour-12).toString()+" PM";
         else
           toController.text=timeOfDay.hour.toString()+" AM";
+      });
+    }
+  }
+  _selectTimeTotime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: _workTime.totime==null?selectedTime:TimeOfDay(hour:int.parse(widget.user.workTimes![0].totime! ), minute: 0),
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+    if(timeOfDay != null )
+    {
+      setState(() {
+        totime=timeOfDay.hour.toString();
+        if(timeOfDay.hour==12)
+          totimeController.text="12 PM";
+        else if(timeOfDay.hour==0)
+          totimeController.text="12 Am";
+        else if(timeOfDay.hour>12)
+          totimeController.text=(timeOfDay.hour-12).toString()+" PM";
+        else
+          totimeController.text=timeOfDay.hour.toString()+" AM";
       });
     }
   }

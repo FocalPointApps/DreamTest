@@ -7,8 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../config/paths.dart';
 import '../../models/consultPackage.dart';
-import '../../models/consultPackage.dart';
-import '../../models/consultPackage.dart';
 import '../../models/consultReview.dart';
 import '../../models/setting.dart';
 import '../../models/user.dart';

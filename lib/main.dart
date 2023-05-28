@@ -198,8 +198,8 @@ class _MyAppState extends State<MyApp> {
     await smartlook.log.enableLogging();
     await smartlook.preferences.setProjectKey('54a00c69b25cef664f89519f3ad9b64944cb6a97');
     await smartlook.start();
-    smartlook.registerIntegrationListener(CustomIntegrationListener());
-    await smartlook.preferences.setWebViewEnabled(true);
+    //smartlook.registerIntegrationListener(CustomIntegrationListener());
+    //await smartlook.preferences.setWebViewEnabled(true);
     setState(() {
       isSet = true;
     });

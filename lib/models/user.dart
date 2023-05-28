@@ -403,17 +403,25 @@ class KeyValueModel {
 }
 class WorkTimes {
   String? from;
+  String? fromtime;
   String? to;
+  String? totime;
   WorkTimes({
     this.from,
     this.to,
+    this.fromtime,
+    this.totime,
   });
 
   factory WorkTimes.fromHashmap(Map<String?, dynamic> ranges) {
     return WorkTimes(
       from: ranges['from'],
       to: ranges['to'],
+      fromtime: ranges['fromtime'],
+      totime: ranges['totime']
 
     );
+
   }
+
 }

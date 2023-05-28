@@ -4,11 +4,14 @@ import 'dart:io';
 import 'package:appsflyer_sdk/appsflyer_sdk.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_store/hijri_picker.dart';
 import 'package:grocery_store/models/user.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:hijri_picker/hijri_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-import 'package:hijri/hijri_calendar.dart';
+import 'package:sugar/sugar.dart' as sugar;
+
 import 'package:hijri_picker/hijri_picker.dart';
 import '../config/colorsFile.dart';
 import '../config/paths.dart';
@@ -25,8 +28,8 @@ class AddAppointmentDialog extends StatefulWidget {
   final int currentNumber;
   final String consultType;
   AddAppointmentDialog({
-     required this.loggedUser,
-     required this.consultant,
+    required this.loggedUser,
+    required this.consultant,
     required this.order, required this.localFrom, required this.localTo, required this.currentNumber,required this.consultType
   });
 
@@ -43,7 +46,7 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
   @override
   void initState() {
     super.initState();
-      getDate();
+    getDate();
 
   }
 
@@ -242,14 +245,14 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
                   else
                     finalTime=DateTime.parse(todayAppointmentList[index]).toLocal().hour.toString()+":"+minues+"Am";
                   return
-                   selectedCard == index?Center(child: CircularProgressIndicator()):InkWell( onTap: () async {
-                     print("selectedindex"+index.toString());
-                     setState(() {
-                       selectedCard=index;
-                     });
-                     addAppointment(DateTime.parse(todayAppointmentList[index]).toLocal());
-                   },
-                     child: Card(
+                    selectedCard == index?Center(child: CircularProgressIndicator()):InkWell( onTap: () async {
+                      print("selectedindex"+index.toString());
+                      setState(() {
+                        selectedCard=index;
+                      });
+                      addAppointment(DateTime.parse(todayAppointmentList[index]).toLocal());
+                    },
+                      child: Card(
                           color: AppColors.pink,
                           child: new Center(
                             child: new Text('$finalTime', style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
@@ -258,7 +261,7 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
                             ),),
                           )
                       ),
-                   );
+                    );
                 }),
               )
                   :Column(mainAxisAlignment: MainAxisAlignment.end,crossAxisAlignment: CrossAxisAlignment.center,
@@ -504,17 +507,27 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
   }
   getDate() async {
     print("kkkkk");
+    //instead datetime.now function
+    // used sugar library to change the problem of time
+    var now = sugar.ZonedDateTime.now(sugar.Timezone('Asia/Riyadh')) ;
+    String utcString = now.toLocal().toNative().toUtc().toString();
+    DateTime dateTime = DateTime.parse(utcString);
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss.SSSSSS').format(dateTime);
+    DateTime dateTimefinal = DateTime.parse(formattedDate);
+
+
+
     try{
-      if(DateTime(selectedDate.year, selectedDate.month, selectedDate.day).isBefore(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day))
+      if(DateTime(selectedDate.year, selectedDate.month, selectedDate.day).isBefore(DateTime(dateTimefinal.year, dateTimefinal.month, dateTimefinal.day))
           ||(!widget.consultant.workDays!.contains(selectedDate.weekday.toString())))
-       {
-         print("kkkkk000");
-         setState(() {
-           loadDates=false;
-           todayAppointmentList=[];
-           dateText=getTranslated(context,"selectData");
-         });
-       }
+      {
+        print("kkkkk000");
+        setState(() {
+          loadDates=false;
+          todayAppointmentList=[];
+          dateText=getTranslated(context,"selectData");
+        });
+      }
       else
       {
         print("kkkkk11");
@@ -528,7 +541,10 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
             print(DateTime.now());
             print("---------");
             print(DateTime.parse(consultDays.todayAppointmentList![start]).toLocal());
-            if(DateTime.parse(consultDays.todayAppointmentList![start]).toLocal().isAfter(DateTime.now())) {
+
+
+
+            if(DateTime.parse(consultDays.todayAppointmentList![start]).toLocal().isAfter(DateTime(dateTimefinal.year, dateTimefinal.month, dateTimefinal.day,dateTimefinal.hour,dateTimefinal.minute))) {
               appointmentList.add(consultDays.todayAppointmentList![start]);
             }
           }
@@ -545,8 +561,8 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
           var to = DateTime(selectedDate.year, selectedDate.month, selectedDate.day,widget.localTo);
           var ttt=(to.difference(from).inHours).round();
           if(ttt<=0) {
-             to = DateTime(selectedDate.year, selectedDate.month, selectedDate.day,24);
-             ttt=(to.difference(from).inHours).round();
+            to = DateTime(selectedDate.year, selectedDate.month, selectedDate.day,24);
+            ttt=(to.difference(from).inHours).round();
           }
           List<dynamic> appointmentList=[];
           //var lessonTime=10;
