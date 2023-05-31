@@ -8,6 +8,12 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:sugar/sugar.dart' as sugar;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -53,7 +59,7 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
   String languages="", workDays="",workDaysValue="",from="",to="",lang="";
   final TextEditingController controller = TextEditingController();
   final TextEditingController searchController = new TextEditingController();
-   GroceryUser? user;
+  GroceryUser? user;
   int currentNumber=0;
   late AccountBloc accountBloc;
   List <consultPackage>packages=[];
@@ -62,11 +68,11 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
   bool first=true,showPayView=false,load=false,valid=false,checkPromo=false,loadReviews=true,loadPackage=true,fromBalance=false;
   bool  showPromo=false,sharing=false;
   int _stackIndex = 1;
-   String initialUrl = '',userImage="",orderId="",userName="dreamUser",orderNum="0";
+  String initialUrl = '',userImage="",orderId="",userName="dreamUser",orderNum="0";
   consultPackage? package;
   Orders? order;
   bool avaliable=false;
- dynamic destinationAmount=0.0;
+  dynamic destinationAmount=0.0;
   PromoCode? promo;
   String? promoCodeId;
   dynamic price,discount=0;
@@ -77,9 +83,10 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
   @override
   void initState() {
     super.initState();
+
     if(widget.loggedUser!=null)
-       user=widget.loggedUser!;
-   
+      user=widget.loggedUser!;
+
     if(widget.consultant.ordersNumbers!<100)
       orderNum=widget.consultant.ordersNumbers.toString();
     else
@@ -102,51 +109,88 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
       accountBloc.add(GetLoggedUserEvent());
     }
     localFrom= DateTime.parse(widget.consultant.fromUtc!).toLocal().hour;
+    DateTime nowww = DateTime.parse(widget.consultant.fromUtc!).toLocal();
+    print(nowww.toString());
     localTo=DateTime.parse(widget.consultant.toUtc!).toLocal().hour;
-    if(localTo==0)
-      localTo=24;
-    if(widget.consultant.languages!.length>0)
-      widget.consultant.languages!.forEach((element) { languages=languages+" "+element;});
-    if(widget.consultant.workTimes!.length>0)
-    {
-      if( localFrom==12)
-        from="12 PM";
-      else if( localFrom==0)
-        from="12 AM";
-      else if( localFrom>12)
-        from=((localFrom)-12).toString()+" PM";
-      else
-        from=(localFrom).toString()+" AM";
+    DateTime noww = DateTime.parse(widget.consultant.toUtc!).toLocal();
 
-    }
-    if(widget.consultant.workTimes!.length>0)
-    {
-      if( localTo==12)
-        to="12 PM";
-      else if( localTo==0||localTo==24)
-        to="12 AM";
-      else if( localTo>12)
-        to=((localTo)-12).toString()+" PM";
-      else
-        to=(localTo).toString()+" AM";
+    myFunction().then((value) {
 
-    }
-    accountBloc.stream.listen((state) {
-      print(state);
-      if (state is GetLoggedUserCompletedState) {
-        user = state.user;
+
+
+
+
+
+
+
+      final pacificTimeZonee = tz.getLocation(value.toString());
+
+
+      DateTime resultnoooo = tz.TZDateTime.from(noww, pacificTimeZonee);
+
+
+
+
+
+      DateTime resultnooo = tz.TZDateTime.from(nowww, pacificTimeZonee);
+
+
+
+      if(resultnooo.toLocal().hour==0)
+        localTo=24;
+      if(widget.consultant.languages!.length>0)
+        widget.consultant.languages!.forEach((element) { languages=languages+" "+element;});
+      if(widget.consultant.workTimes!.length>0)
+      {
+        if( resultnooo.hour==12)
+          from="12 PM";
+        else if( resultnooo.hour==0)
+          from="12 AM";
+        else if( resultnooo.hour>12){
+          from=((resultnooo.hour)-12).toString()+" PM";
+
+        }
+        else{
+
+          from=(((resultnooo.hour)-1)).toString()+" AM";
+
+
+        }
+
       }
+      if(widget.consultant.workTimes!.length>0)
+      {
+        if( resultnoooo.hour==12)
+          to="12 PM";
+        else if( resultnoooo.hour==0||resultnoooo.toLocal().hour==24)
+          to="12 AM";
+        else if( resultnoooo.hour>12)
+          to=(((resultnoooo.hour)-12)-1).toString()+" PM";
+        else
+          to=(resultnoooo.hour).toString()+" AM";
+
+      }
+      accountBloc.stream.listen((state) {
+        print(state);
+        if (state is GetLoggedUserCompletedState) {
+          user = state.user;
+        }
+      });
+      //--------add details event
+      print("content_view event");
+      String eventName = "af_content_view";
+      Map eventValues = {
+        "af_price": widget.consultant.price,
+        "af_content_id": widget.consultant.uid,
+      };
+      addEvent(eventName, eventValues);
+
     });
-    //--------add details event
-    print("content_view event");
-    String eventName = "af_content_view";
-    Map eventValues = {
-      "af_price": widget.consultant.price,
-      "af_content_id": widget.consultant.uid,
-    };
-    addEvent(eventName, eventValues);
 
   }
+
+
+
   Future<void> getNumber() async {
     try{
       setState(() {
@@ -212,6 +256,13 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
     }
 
   }
+
+
+  Future<String> myFunction() async {
+    final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+
+    return currentTimeZone;
+  }
   errorLog(String function,String error)async {
     String id = Uuid().v4();
     await FirebaseFirestore.instance.collection(Paths.errorLogPath)
@@ -269,7 +320,7 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
       var reviewsList = List<ConsultReview>.from(
         querySnapshot.docs.map((snapshot) => ConsultReview.fromMap(snapshot.data() as Map),
         ),  );
-     // print(reviewsList.where((o) => o.consultName== "").toList().length);
+      // print(reviewsList.where((o) => o.consultName== "").toList().length);
 
       setState(() {
         reviewLength=reviewsList.length;
@@ -345,15 +396,15 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
     }
     appsflyerSdk.logEvent(eventName, eventValues);
     if(eventName=="af_content_view")
-      {
-        await FirebaseAnalytics.instance.logSelectItem(
-            itemListId:widget.consultant.uid,
-            itemListName:  getTranslated(context, "lang")=="ar"?widget.consultant.consultName!.nameAr!:
-            getTranslated(context, "lang")=="en"?widget.consultant.consultName!.nameEn!:
-            getTranslated(context, "lang")=="fr"?widget.consultant.consultName!.nameFr!:
-            widget.consultant.consultName!.nameIn!,
-        );
-      }
+    {
+      await FirebaseAnalytics.instance.logSelectItem(
+        itemListId:widget.consultant.uid,
+        itemListName:  getTranslated(context, "lang")=="ar"?widget.consultant.consultName!.nameAr!:
+        getTranslated(context, "lang")=="en"?widget.consultant.consultName!.nameEn!:
+        getTranslated(context, "lang")=="fr"?widget.consultant.consultName!.nameFr!:
+        widget.consultant.consultName!.nameIn!,
+      );
+    }
     else if(eventName=="af_purchase")
       await FirebaseAnalytics.instance.logPurchase(
           currency: "USD",
@@ -555,7 +606,7 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
                           spacing: 1.0,
                         ),
                         SizedBox(height: 20,),
-                       /* Icon( Icons.mic_none_rounded,color:AppColors.pink,size: 15.0, ),
+                        /* Icon( Icons.mic_none_rounded,color:AppColors.pink,size: 15.0, ),
                         widget.consultant.languages!.length>1?Row(mainAxisAlignment: MainAxisAlignment.center,children: [
                           langWidget(widget.consultant.languages![0]),
                           SizedBox(width: 5,),
@@ -808,7 +859,7 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => ReviewScreens(consult:widget.consultant ,reviewLength:reviewLength,
-                                    loggedUser: widget.loggedUser,), ),  );
+                                      loggedUser: widget.loggedUser,), ),  );
                               },
                                 child: Container(
                                   height: 20, //width: size.width*.40,
@@ -891,6 +942,54 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
                         ),
                       ),
                     ),
+                  ],),
+                  SizedBox(height: 20,),
+                  Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,crossAxisAlignment:CrossAxisAlignment.center,children: [
+                    Image.asset(
+                      'assets/applicationIcons/Iconly-Two-tone-TimeCircle.png',
+                      width: 25,
+                      height: 25,
+                    ),
+                    SizedBox(width: 5,),
+                    Container(height: 35,width: size.width*.3,
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGrey2,
+                        borderRadius: BorderRadius.circular(30.0),
+
+                      ),child:  Center(
+                        child:  Text(
+                          from,
+                          textAlign: TextAlign.center,
+                          maxLines: 3,
+                          style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.normal,
+                            letterSpacing: 0.5,
+                          ),),
+                      ),
+                    ),
+                    Container(height: 35,width: size.width*.3,
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGrey2,
+                        borderRadius: BorderRadius.circular(30.0),
+
+                      ),child:  Center(
+                        child:Text(
+                          to,
+                          textAlign: TextAlign.center,
+                          maxLines: 3,
+                          style: TextStyle( fontFamily: getTranslated(context, 'fontFamily'),
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.normal,
+                            letterSpacing: 0.5,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(width: 5,),
                   ],),
                   SizedBox(height: 20,),
                   Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,crossAxisAlignment:CrossAxisAlignment.center,children: [
@@ -1673,19 +1772,19 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
       if(user!=null&& user!.name!=null)
         userName= user!.name!;
       String description="السعر";
-     /* if( user!.countryCode!=null&& user!.countryCode=="+966")
+      /* if( user!.countryCode!=null&& user!.countryCode=="+966")
         description=" السعر شامل ضريبة القيمة المضافة";*/
       print("payStart111");
       final uri = Uri.parse('https://api.tap.company/v2/charges');
       final headers = {
         'Content-Type': 'application/json',
-       'Authorization':"Bearer sk_live_UN9kc65zvtmrX1PjnagRYhLb",
+        'Authorization':"Bearer sk_live_UN9kc65zvtmrX1PjnagRYhLb",
         'Connection':'keep-alive',
         'Accept-Encoding':'gzip, deflate, br'
 
       };
       var destinationBody ={};
-  /*  if(widget.consultant.allowEditPayinfo==false&&widget.consultant.marketplace!&&widget.consultant.destinationId!=null&&widget.consultant.destinationId!="")
+      /*  if(widget.consultant.allowEditPayinfo==false&&widget.consultant.marketplace!&&widget.consultant.destinationId!=null&&widget.consultant.destinationId!="")
       {  destinationBody={
         "destination": [
           {
@@ -1862,27 +1961,27 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
           'screen': "ConsultantDetailsScreen",
           'function': "payStatus",
         });
-          print("start payment with stripe");
+        print("start payment with stripe");
         showMessage(getTranslated(context, "failed"));
-          showDialog(context: context, builder: (context)=> ShowDialog(
-            contentText: 'otherPay',
-            noFunction:()
-            {
-               setState(() {
-                load=false;
-              });
-              Navigator.pop(context);
-            },
-            yesFunction: ()
-            {
-              Navigator.pop(context);
-              setState(() {
-                load=true;
-              });
-              stripePayment(email: widget.loggedUser!.phoneNumber.toString()+"Dream@gmail.com", amount: double.parse(price)*100,context: context);
+        showDialog(context: context, builder: (context)=> ShowDialog(
+          contentText: 'otherPay',
+          noFunction:()
+          {
+            setState(() {
+              load=false;
+            });
+            Navigator.pop(context);
+          },
+          yesFunction: ()
+          {
+            Navigator.pop(context);
+            setState(() {
+              load=true;
+            });
+            stripePayment(email: widget.loggedUser!.phoneNumber.toString()+"Dream@gmail.com", amount: double.parse(price)*100,context: context);
 
-            },
-          ));
+          },
+        ));
       }
     }catch(e){
       errorLog("payStatus",e.toString());
@@ -2025,8 +2124,8 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
       } );
       //-----------
       print("af_purchase event");
-       eventName = "af_purchase";
-       eventValues = {
+      eventName = "af_purchase";
+      eventValues = {
         "af_revenue": price.toString(),
         "af_price": price.toString(),
         "af_content_id": widget.consultant.uid,
@@ -2217,3 +2316,5 @@ class _ConsultantDetailsScreenState extends State<ConsultantDetailsScreen> {
   }
 
 }
+
+

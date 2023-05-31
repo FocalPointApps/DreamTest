@@ -32,10 +32,14 @@ import 'models/DefaultFirebaseConfig.dart';
 import 'screens/home_screen.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
+  tz.initializeTimeZones();
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
 
@@ -198,8 +202,8 @@ class _MyAppState extends State<MyApp> {
     await smartlook.log.enableLogging();
     await smartlook.preferences.setProjectKey('54a00c69b25cef664f89519f3ad9b64944cb6a97');
     await smartlook.start();
-    smartlook.registerIntegrationListener(CustomIntegrationListener());
-    await smartlook.preferences.setWebViewEnabled(true);
+    //smartlook.registerIntegrationListener(CustomIntegrationListener());
+    //await smartlook.preferences.setWebViewEnabled(true);
     setState(() {
       isSet = true;
     });

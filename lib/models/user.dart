@@ -60,7 +60,10 @@ class GroceryUser {
   String? personalIdUrl;
   String? IBAN;
   String? fromUtc;
+  String? fromUtc2;
   String? toUtc;
+  String? toUtc2;
+  String? fr;
   String? businessId;
   String? entityId;
   bool? allowEditPayinfo;
@@ -124,6 +127,8 @@ class GroceryUser {
     this.preferredPaymentMethod,
     this.fromUtc,
     this.toUtc,
+    this.fromUtc2,
+    this.toUtc2,
     this.allowEditPayinfo,
   });
 
@@ -302,6 +307,8 @@ class GroceryUser {
       personalIdUrl: data['personalIdUrl'],
       fromUtc: data['fromUtc'],
       toUtc: data['toUtc'],
+      fromUtc2: data['fromUtc2'],
+      toUtc2: data['toUtc2'],
     );
   }
 }
@@ -403,17 +410,25 @@ class KeyValueModel {
 }
 class WorkTimes {
   String? from;
+  String? fromtime;
   String? to;
+  String? totime;
   WorkTimes({
     this.from,
     this.to,
+    this.fromtime,
+    this.totime,
   });
 
   factory WorkTimes.fromHashmap(Map<String?, dynamic> ranges) {
     return WorkTimes(
       from: ranges['from'],
       to: ranges['to'],
+      fromtime: ranges['fromtime'],
+      totime: ranges['totime']
 
     );
+
   }
+
 }

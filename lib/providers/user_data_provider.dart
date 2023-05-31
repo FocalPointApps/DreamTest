@@ -167,10 +167,17 @@ class UserDataProvider extends BaseUserDataProvider {
 
       List<Map> intrList = [];
       for (var add in user.workTimes!) {
-        Map tempAdd = Map();
-        tempAdd.putIfAbsent('from', () => add.from);
-        tempAdd.putIfAbsent('to', () => add.to);
-        intrList.add(tempAdd);
+        Map firsttime = new Map();
+        Map secondtime = Map();
+
+        //first schedule
+        firsttime.putIfAbsent('from', () => add.from);
+        firsttime.putIfAbsent('to', () => add.to);
+        //second schedule
+        secondtime.putIfAbsent('from', () => add.fromtime);
+        secondtime.putIfAbsent('to', () => add.totime);
+        intrList.add(firsttime);
+        intrList.add(secondtime);
       }
       print("hhhh4");
       if (profileImage != null) {
